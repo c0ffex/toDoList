@@ -1,28 +1,50 @@
+/* eslint-disable node/no-unsupported-features/es-syntax */
+/* eslint-disable no-undef */
 const express = require('express');
 
 const app = express();
 
 app.use(express.json());
-router = express.Router();
 
-router.get('/', (req, res) => {
-  res.status(200)
-  res.send('<h1>Hello World!</h1>')
-})
+checklistRouter = express.Router();
 
-router.post('/', (req, res) => {
-  res.status(201).json(req.body)
-})
+const Checklist = require('../models/checklist');
 
-router.get('/:id', (req, res) => {
-  res.send(`id: ${req.params.id}`)
-})
+checklistRouter.get('/', async (req, res) => {
+  try {
+    const checklist = await Checklist.find();
+    res.status(200).json(checklist);
+  } catch (err) {
+    res.status(500).json({ err: err });
+  }
+});
 
-router.put('/:id', (req, res) => {
-  res.send(`put id: ${req.params.id}`)
-})
+checklistRouter.post('/', async (req, res) => {
+  const { name } = req.body;
 
-router.delete('/:id', (req, res) => {
-  res.send(`delete id: ${req.params.id}`)
-})
-module.exports = router;
+  try {
+    const checklist = await Checklist.create({ name });
+
+    res.status(200).json(checklist);
+  } catch (err) {
+    res.status(422).json(err);
+  }
+});
+
+checklistRouter.get('/:id', async (req, res) => {
+  const checklist = await Checklist.findById(req.params.id);
+  try {
+    res.status(200).json(checklist);
+  } catch (err) {
+    res.status(422).json(err);
+  }
+});
+
+checklistRouter.put('/:id', (req, res) => {
+  res.send(`put id: ${req.params.id}`);
+});
+
+checklistRouter.delete('/:id', (req, res) => {
+  res.send(`delete id: ${req.params.id}`);
+});
+module.exports = checklistRouter;
