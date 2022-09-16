@@ -59,24 +59,24 @@ checklistRouter.get('/:id', async (req, res) => {
 });
 
 checklistRouter.put('/:id', async (req, res) => {
-  const { name } = req.body;
-  const checklist = await Checklist.findByIdAndUpdate(req.params.id)
+  const { name } = req.body.checklist;
+  const checklist = await Checklist.findById(req.params.id)
   try {
-    await checklist.update({name})
-    res.status(200).redirect('/checklists')
+    await checklist.updateOne({name})
+    res.redirect('/checklists')
   } catch (error) {
     const errors = error.error
     res.status(422).render('checklist/edit', {checklist: {...checklist, errors}})
   }
 });
 
-checklistRouter.delete('/:id/delete', async (req, res) => {
-  const checklist = await Checklist.findById(req.params.id);
-  try {
-    const checklist = await Checklist.findByIdAndDelete(checklist);
-    res.status(200).redirect('/');
-  } catch (err) {
-    res.status(422).json(err);
-  }
-});
+// checklistRouter.delete('/:id/delete', async (req, res) => {
+//   const checklist = await Checklist.findById(req.params.id);
+//   try {
+//     const checklist = await Checklist.findByIdAndDelete(checklist);
+//     res.status(200).redirect('/');
+//   } catch (err) {
+//     res.status(422).json(err);
+//   }
+// });
 module.exports = checklistRouter;
